@@ -37,6 +37,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 
 /**
@@ -57,14 +58,16 @@ public class Main extends Activity implements ModuleListFragment.OnModuleSelecte
 
     /** Version string, only used in About dialog. Should always match version in Manifest.
      */
-    public static final String VERSION = "v1.0";
+    public static final String VERSION = "v1.1";
 
     /** The server address to use for fetching remote data */
     public static final String SERVER_HOST = "deanderezwaartekracht.nl";
     /** The server port to use for fetching remote data */
     public static final int SERVER_PORT = 80;
     /** The path on the server where the data can be found */
-    public static final String SERVER_PATH = "/Earmouse/";
+    public static final String SERVER_PATH = "/Earmouse_localized/";
+    /** Available locales */
+    public static final String[] SUPPORTED_LOCALES = { "de" };
 
     /** Set to true to enable StrictMode testing */
     private static final boolean DEVELOPER_MODE = false;
@@ -277,20 +280,24 @@ public class Main extends Activity implements ModuleListFragment.OnModuleSelecte
             startActivity(intent);
             return true;
         } else if(id == R.id.action_about) {
-            // FIXME: Externalise string
-            Spanned s = Html.fromHtml("<p>Earmouse " + VERSION + " by Paul Klinkenberg\n" +
-                    "</p>\n" +
-                    "If you have any questions, suggestions or feedback, please contact us by <a href=\"mailto:pklinken.development@gmail.com\"" +
-                    ">mail</a> or visit the " +
-                    "<a href=\"https://play.google.com/store/apps/details?id=pk.contender.earmouse\" name=\"Link to store page\">store page!</a>");
+            String text = String.format(getResources().getString(R.string.about_message), VERSION);
+            CharSequence styledText = Html.fromHtml(text);
             final AlertDialog d = new AlertDialog.Builder(this)
                     .setTitle(R.string.about_title)
-                    .setMessage(s)
+                    .setMessage(styledText)
                     .setCancelable(true)
+
                     .create();
             mDialog = d;
             d.show();
-            ((TextView)d.findViewById(android.R.id.message)).setMovementMethod(LinkMovementMethod.getInstance());
+
+            // Make text a bit smaller
+            TextView dialogView = (TextView) d.findViewById(android.R.id.message);
+            dialogView.setTextSize(14);
+
+            // ??
+            ((TextView) d.findViewById(android.R.id.message)).setMovementMethod(LinkMovementMethod.getInstance());
+
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -340,7 +347,7 @@ public class Main extends Activity implements ModuleListFragment.OnModuleSelecte
 
             @Override
             public boolean accept(File dir, String filename) {
-                return filename.startsWith("module");
+                return filename.startsWith("module" + getLocaleSuffix());
             }
         };
         File moduleFileList [] = currentDir.listFiles(moduleFilter);
@@ -378,12 +385,14 @@ public class Main extends Activity implements ModuleListFragment.OnModuleSelecte
      */
     private void installDefaultModules() {
         AssetManager assetMan = getAssets();
+        String localizedAssetDir = "modules" + getLocaleSuffix();
 
         try {
-            String [] assetList = assetMan.list("modules");
+            String [] assetList = assetMan.list(localizedAssetDir);
+
             File currentDir = getDir("files", Context.MODE_PRIVATE);
             for(String item : assetList) {
-                InputStream in = assetMan.open("modules/" + item, AssetManager.ACCESS_BUFFER);
+                InputStream in = assetMan.open(localizedAssetDir + "/" + item, AssetManager.ACCESS_BUFFER);
                 File outputFile = new File(currentDir, item);
                 FileOutputStream out = new FileOutputStream(outputFile);
 
@@ -509,6 +518,33 @@ public class Main extends Activity implements ModuleListFragment.OnModuleSelecte
         Toast.makeText(this, s, Toast.LENGTH_LONG).show();
 
         mActionMode.finish(); // Action picked, so close the CAB
+    }
+
+    /**
+     * Test whether the default Locale is supported by the lesson material
+     * @return True if the default locale is supported by the lesson material
+     */
+    public static boolean isDefaultLocaleSupported() {
+
+        for(String locale : SUPPORTED_LOCALES) {
+            if(Locale.getDefault().getLanguage().equals(locale))
+                return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Return a string that can be inserted into a filename to match the default Locale
+     * @return A string to match the default locale or "" if the default locale is not supported
+     */
+    public static String getLocaleSuffix() {
+
+        if(isDefaultLocaleSupported()) {
+            return "_" + Locale.getDefault().getLanguage();
+        } else {
+            return "_en";
+        }
     }
 
     /**

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Earmouse</string>
+    <string name="action_settings">Einstellungen</string>
+    <string name="action_reset">Erfolg zurücksetzen</string>
+    <string name="action_manage">Module hinzufügen</string>
+    <string name="action_delete">Löschen</string>
+    <string name="action_about">Über</string>
+    <string name="title_activity_detail">Modul</string>
+    <string name="title_activity_manager_detail">Modul</string>
+    <string name="title_activity_exercise">Übung</string>
+    <string name="title_activity_module_manager">Module hinzufügen</string>
+
+    <string name="feedback_ready">Übung bereit, Start drücken!</string>
+    <string name="feedback_incorrect">Falsch, nochmal!</string>
+    <string name="feedback_correct">Richtig, beliebige Taste für weiter!</string>
+    <string name="feedback_successrate_value">Erfolgsrate: </string>
+    <string name="feedback_successrate_nodata">Erfolgsrate: keine Daten verfügbar</string>
+
+    <string name="stats_rate">Erfolgsrate: </string>
+
+    <string name="no_module_selected">Kein Modul ausgewählt</string>
+
+    <string name="content_description_playbutton">Start Taste</string>
+    <string name="content_description_difficulty_icon">Icon für Modulschwierigkeit</string>
+
+    <string name="manager_installed_subscript">installiert</string>
+    <string name="manager_notinstalled_subscript">nicht installiert</string>
+    <string name="manager_install_button">Installieren</string>
+    <string name="manager_uninstall_button">Deinstallieren</string>
+
+    <string name="media_error_preparing">Fehler beim Vorbereiten der Medien</string>
+
+    <string name="http_received_empty">Leere Antwort vom Server empfangen</string>
+    <string name="http_error">Fehler beim Kontaktieren des Servers</string>
+
+    <string name="dialog_delete">Die ausgewählten Elemente wirklich löschen?\nAlle Statistikdaten gehen verloren</string>
+    <string name="dialog_deleteconfirm">Löschen</string>
+    <string name="dialog_deleteabort">Abbrechen</string>
+    <string name="dialog_reset">Die ausgewählten Elemente wirklich zurücksetzen?\nAlle Statistikdaten gehen verloren</string>
+    <string name="dialog_resetconfirm">Zurücksetzen</string>
+    <string name="dialog_resetabort">Abbrechen</string>
+
+    <string name="about_title">Über Earmouse</string>
+    <string name="about_message">&lt;p>Earmouse %1$s von Paul Klinkenberg&lt;/p>
+        &lt;p>Bei Fragen, Anregungen oder Feedback schickt mir eine &lt;a href="mailto:pklinken.development@gmail.com">E-Mail&lt;/a>
+        oder besucht die &lt;a href="https://play.google.com/store/apps/details?id=pk.contender.earmouse" name="Link zum Playstore">Store-Seite&lt;/a>!&lt;/p>
+        &lt;p>Besonderen Dank an:&lt;br>
+        J.W. Klinkenberg (Tests)&lt;br>
+        Stefan Hamacher (deutsche Übersetzung)
+        &lt;/p>
+    </string>
+
+    <string name="mainlist_successrate" formatted="false">%1$d%% Erfolgsrate nach %2$d</string>
+
+    <string name="list_no_modules_installed">Keine Module installiert</string>
+    <string name="toast_module_installed">Modul erfolgreich installiert</string>
+    <string name="toast_error_installing_module">Fehler beim Installieren des Moduls</string>
+    <string name="action_install">Installieren</string>
+    <string name="cab_selected">ausgewählt</string>
+    <string name="cab_deleted">gelöscht</string>
+    <string name="cab_installed">installiert</string>
+    <string name="cab_reset">zurückgesetzt</string>
+    <string name="list_no_modules_available">Keine neuen Module verfügbar</string>
+
+    <plurals name="plural_exercise">
+        <item quantity="one">Übung</item>
+        <item quantity="other">Übungen</item>
+    </plurals>
+
+    <plurals name="plural_module">
+        <item quantity="one">Modul</item>
+        <item quantity="other">Module</item>
+    </plurals>
+
+</resources>

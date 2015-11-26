@@ -43,9 +43,16 @@
     <string name="dialog_resetabort">Abort</string>
 
     <string name="about_title">About Earmouse</string>
-    <string name="about_message"><i>test</i><b>bold</b><p>testcakes</p></string>
+    <string name="about_message">&lt;p>Earmouse %1$s by Paul Klinkenberg&lt;/p>
+        &lt;p>If you have any questions, suggestions or feedback, please contact me by &lt;a href="mailto:pklinken.development@gmail.com">mail&lt;/a>
+        or visit the &lt;a href="https://play.google.com/store/apps/details?id=pk.contender.earmouse" name="Link to store page">store page!&lt;/a>&lt;/p>
+        &lt;p>Special thanks to:&lt;br>
+        J.W. Klinkenberg (testing)&lt;br>
+        Stefan Hamacher (German localization)
+        &lt;/p>
+    </string>
     
-    <string name="mainlist_successrate">success rate</string>
+    <string name="mainlist_successrate" formatted="false">%1$d%% success rate after %2$d</string>
     <string name="list_no_modules_installed">No modules installed</string>
     <string name="toast_module_installed">Module successfully installed</string>
     <string name="toast_error_installing_module">Error installing module</string>

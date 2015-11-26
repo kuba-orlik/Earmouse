@@ -251,7 +251,9 @@ public class ManagerDetailsFragment extends Fragment {
         protected Module doInBackground(Void... params) {
             httpClient = AndroidHttpClient.newInstance("Earmouse/" + Main.VERSION);
             HttpHost host = new HttpHost(Main.SERVER_HOST, Main.SERVER_PORT);
-            BasicHttpRequest request = new BasicHttpRequest("GET", Main.SERVER_PATH + "module_" + id + ".json");
+            String localizedModulePath = Main.SERVER_PATH + "module" + Main.getLocaleSuffix() +
+                    "_" + id + ".json";
+            BasicHttpRequest request = new BasicHttpRequest("GET", localizedModulePath);
 
             HttpResponse response;
             try {

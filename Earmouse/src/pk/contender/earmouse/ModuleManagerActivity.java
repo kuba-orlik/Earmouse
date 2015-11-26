@@ -246,7 +246,9 @@ public class ModuleManagerActivity extends Activity implements ManagerListFragme
                 if(mod == null)
                     continue;
 
-                BasicHttpRequest request = new BasicHttpRequest("GET", Main.SERVER_PATH + "module_" + mod.getId() + ".json");
+                String localizedModulePath = Main.SERVER_PATH + "module" + (Main.getLocaleSuffix().equals("") ? "_" : Main.getLocaleSuffix()) +
+                        "_" + mod.getId() + ".json";
+                BasicHttpRequest request = new BasicHttpRequest("GET", localizedModulePath);
 
                 HttpResponse response;
                 try {
@@ -415,7 +417,7 @@ public class ModuleManagerActivity extends Activity implements ManagerListFragme
         protected List<Module> doInBackground(Void... params) {
             httpClient = AndroidHttpClient.newInstance("Earmouse/" + Main.VERSION);
             HttpHost host = new HttpHost(Main.SERVER_HOST, Main.SERVER_PORT);
-            BasicHttpRequest request = new BasicHttpRequest("GET", Main.SERVER_PATH + "list.json");
+            BasicHttpRequest request = new BasicHttpRequest("GET", Main.SERVER_PATH + "list" + Main.getLocaleSuffix() +  ".json");
 
             HttpResponse response;
             try {

@@ -412,7 +412,9 @@ public class Module implements Comparable<Module>{
 	public boolean writeModuleToJson() {
 		
 		File currentDir = mCtx.getDir("files", Context.MODE_PRIVATE);
-		File modFile = new File(currentDir, "module_" + id + ".json");
+		File modFile = new File(currentDir, "module" +
+				Main.getLocaleSuffix() + "_" +
+				id + ".json");
 		
 		if (!modFile.exists()) {
 			try {
@@ -493,7 +495,9 @@ public class Module implements Comparable<Module>{
 	@SuppressWarnings("UnusedReturnValue")
     public boolean purgeModule() {
 		File currentDir = mCtx.getDir("files", Context.MODE_PRIVATE);
-		File modFile = new File(currentDir, "module_" + id + ".json");
+        File modFile = new File(currentDir, "module" +
+                Main.getLocaleSuffix() + "_" +
+                id + ".json");
 		
 		if(!stats.purgeStats())
 			Log.d("DEBUG", "stats.purgeStats() returned false");

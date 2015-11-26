@@ -65,8 +65,11 @@ public class ModuleListAdapter extends ArrayAdapter<Module> {
 				TextView statsText = (TextView) rowView.findViewById(R.id.stats);
 				int exercisesCompleted = moduleList.get(position).getExercisesCompleted();
                 statsText.setVisibility(View.VISIBLE);
-				statsText.setText(successRate + "% " + res.getText(R.string.mainlist_successrate) 
-						+ " after " + exercisesCompleted + " " + res.getQuantityString(R.plurals.plural_exercise, exercisesCompleted));
+                String text = String.format(res.getString(R.string.mainlist_successrate), successRate, exercisesCompleted)
+                        + " " + res.getQuantityString(R.plurals.plural_exercise, exercisesCompleted);
+                statsText.setText(text);
+				//statsText.setText(successRate + "% " + res.getText(R.string.mainlist_successrate)
+				//		+ " after " + exercisesCompleted + " " + res.getQuantityString(R.plurals.plural_exercise, exercisesCompleted));
 			} else {
                 TextView statsText = (TextView) rowView.findViewById(R.id.stats);
                 if(statsText != null)
