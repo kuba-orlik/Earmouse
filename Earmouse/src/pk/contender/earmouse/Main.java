@@ -58,12 +58,13 @@ public class Main extends Activity implements ModuleListFragment.OnModuleSelecte
 
     /** Version string, only used in About dialog. Should always match version in Manifest.
      */
-    public static final String VERSION = "v1.1";
+    public static final String VERSION = "v1.2";
 
     /** The server address to use for fetching remote data */
-    public static final String SERVER_HOST = "deanderezwaartekracht.nl";
+    //public static final String SERVER_HOST = "jwklink.home.xs4all.nl";
+    public static final String SERVER_HOST = "192.168.0.16";
     /** The server port to use for fetching remote data */
-    public static final int SERVER_PORT = 80;
+    public static final int SERVER_PORT = 3000;
     /** The path on the server where the data can be found */
     public static final String SERVER_PATH = "/Earmouse_localized/";
     /** Available locales */

@@ -2,12 +2,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="pk.contender.earmouse.Main">
 
+     <!-- Temporarily disabled until i have a new host -->
     <item
+        android:enabled="false"
+        android:visible="false"
         android:id="@+id/action_manage"
         android:orderInCategory="1000"
         android:title="@string/action_manage"
         android:icon="@android:drawable/ic_menu_add"
         android:showAsAction="ifRoom"/>
+
     <item
         android:id="@+id/action_about"
         android:orderInCategory="2000"

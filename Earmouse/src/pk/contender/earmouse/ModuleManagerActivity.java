@@ -248,6 +248,7 @@ public class ModuleManagerActivity extends Activity implements ManagerListFragme
 
                 String localizedModulePath = Main.SERVER_PATH + "module" + (Main.getLocaleSuffix().equals("") ? "_" : Main.getLocaleSuffix()) +
                         "_" + mod.getId() + ".json";
+                Log.d("DEBUG", "Trying to get: " + localizedModulePath);
                 BasicHttpRequest request = new BasicHttpRequest("GET", localizedModulePath);
 
                 HttpResponse response;
