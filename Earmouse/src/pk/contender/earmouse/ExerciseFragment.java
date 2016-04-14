@@ -68,6 +68,11 @@ public class ExerciseFragment extends Fragment {
      */
     private int currentExercise = -1;
 
+    /**
+     * If true the instance should request the mediaFragment to play the selected answer
+     */
+    private boolean practiceMode = false;
+
     /** Set to true if we are currently hiding the UI
      * The UI is hidden when there is no {@link pk.contender.earmouse.Module} selected. */
     private boolean isEmpty;
@@ -388,23 +393,10 @@ public class ExerciseFragment extends Fragment {
      * @param position The position of the Button in the ButtonGridFragment that was clicked.
      */
     public void onAnswerSelected(int position) {
-        /*
-        switch(exerciseState) {
-            case EXERCISE_READY:
-                Log.d("DEBUG", "Received click event on " + position + " while in EXERCISE_READY state.");
-                break;
-            case EXERCISE_CONTINUE:
-                Log.d("DEBUG", "Received click event on " + position + " while in EXERCISE_CONTINUE state.");
-                break;
-            case EXERCISE_READY_NOTPLAYED:
-                Log.d("DEBUG", "Received click event on " + position + " while in EXERCISE_READY_NOTPLAYED state.");
-                break;
-            default:
-                Log.d("DEBUG", "This shit be fucked up, man.");
-                break;
-        } */
 
-        if(exerciseState == EXERCISE_READY) {
+        if(practiceMode) {
+            playSelectedAnswer(position);
+        } else if(exerciseState == EXERCISE_READY) {
             // Ready to receive answer
             if(position == currentExercise) {
                 // Correct answer, register with statistics, give UI feedback and change state.
@@ -426,6 +418,22 @@ public class ExerciseFragment extends Fragment {
             prepareExercise();
         }
         // Activity not ready to receive answer events, discard input.
+    }
+
+    /**
+     * In practice mode, when a user selects an answer it is to be played immediately by
+     * the mediaFragment.
+     * @param pos is the index of the button clicked on the grid, which translates directly
+     *            to an Exercise returned by mod.getExercise(pos)
+     */
+    private void playSelectedAnswer(int pos) {
+        // Get an exercise for the user selection
+        Exercise ex = mod.getExercise(pos);
+        MediaFragment mediaFragment = (MediaFragment) getFragmentManager().findFragmentById(R.id.media);
+        if(mediaFragment != null) {
+            mediaFragment.playImmediately(ex);
+        } else
+            Log.d("DEBUG", "MediaFragment is null");
     }
 
     /**
@@ -465,4 +473,7 @@ public class ExerciseFragment extends Fragment {
             Log.d("DEBUG", "ButtonGridFragment is null");
     }
 
+    public void onPracticeModeToggle() {
+        practiceMode = !practiceMode;
+    }
 }
