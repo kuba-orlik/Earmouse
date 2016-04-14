@@ -13,7 +13,7 @@ import android.view.View;
  *
  * @author Paul Klinkenberg <pklinken.development@gmail.com>
  */
-public class ExerciseActivity extends Activity implements ButtonGridFragment.AnswerSelectedListener  {
+public class ExerciseActivity extends Activity implements ButtonGridFragment.AnswerSelectedListener, ButtonGridFragment.PracticeModeToggleListener {
 
     /**
      * Constant used for getting the value of the selected Module's position from Intent payload.
@@ -49,6 +49,14 @@ public class ExerciseActivity extends Activity implements ButtonGridFragment.Ans
 		ExerciseFragment fragment = (ExerciseFragment) getFragmentManager().findFragmentById(R.id.fragment_exercise);
 		if(fragment != null && fragment.isInLayout()) {
 			fragment.onAnswerSelected(position);
+		}
+	}
+
+	@Override
+	public void onPracticeModeToggle() {
+		ExerciseFragment fragment = (ExerciseFragment) getFragmentManager().findFragmentById(R.id.fragment_exercise);
+		if(fragment != null && fragment.isInLayout()) {
+			fragment.onPracticeModeToggle();
 		}
 	}
 

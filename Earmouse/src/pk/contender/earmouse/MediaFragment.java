@@ -46,6 +46,10 @@ public class MediaFragment extends Fragment {
     private MediaPlayer mPlayer = null;
     /** Set to true if the MediaPlayer is ready to play an exercise */
     private boolean mPlayerReady = false;
+    /** If true the next sample generated is to be played immediately and afterwards
+     * the sample for currentExercise is to be generated again
+     */
+    private boolean practiceSample = false;
     /** The play/pause button displayed in {@link pk.contender.earmouse.ExerciseFragment}. */
     private ImageButton playButton;
     /** the bit rate of the samples we use to generate our exercises */
@@ -95,8 +99,13 @@ public class MediaFragment extends Fragment {
             public void onCompletion(MediaPlayer mp) {
                 //When finished playing a sample, seek back to the start and display the Play button.
                 if(mPlayerReady) {
-                    mp.seekTo(0);
-                    setButtonImagePlay();
+                    if(practiceSample) {
+                        prepareExercise(currentExercise);
+                    } else {
+                        mp.seekTo(0);
+                        setButtonImagePlay();
+                    }
+
                 }
             }
         });
@@ -193,9 +202,28 @@ public class MediaFragment extends Fragment {
     public void prepareExercise(Exercise exercise) {
 
         mPlayerReady = false;
+        practiceSample = false;
         currentExercise = exercise;
         mPlayer.reset(); // Get the Mediaplayer in Idle state before we can set a data source
         new PrepareExerciseWorker().execute(exercise);
+    }
+
+    /**
+     * Called by ExerciseFragment when the user wants to hear one of the answers before trying
+     * to complete the exercise.
+     * Does not change currentExercise, but does have to generate a new .WAV and wriggle its
+     * way into any currently playing media.
+     * @param exercise The Exercise to play immediately
+     */
+    public void playImmediately(Exercise exercise) {
+        // Stop and reset the mediaPlayer
+        mPlayer.reset();
+        mPlayerReady = false;
+        // Generate our Wav and play it immediately
+        playImmediately = true;
+        practiceSample = true;
+        new PrepareExerciseWorker().execute(exercise);
+
     }
 
     /**

@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
+import android.widget.ToggleButton;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -33,7 +34,8 @@ public class ButtonGridFragment extends Fragment {
     /* SharedPreferences constants */
     private static final String PREFERENCES_MFADEDBUTTONLIST = "preferences_mFadedButtonList";
     private static final String PREFERENCES_MANSWERLIST = "preferences_mAnswerList";
-    private static AnswerSelectedListener listener;
+    private static AnswerSelectedListener asListener;
+	private static PracticeModeToggleListener pmListener;
     /** The maximum width of the button grid */
 	private static final int COLUMNS = 3;
 	private Context mCtx;
@@ -63,6 +65,15 @@ public class ButtonGridFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_buttongrid, container, false);
 		base = (LinearLayout) view.findViewById(R.id.grid_base);
+		ToggleButton toggleButton = (ToggleButton) view.findViewById(R.id.toggleButton);
+		toggleButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				pmListener.onPracticeModeToggle();
+			}
+		});
+		// Default is Answer mode, corresponding with ExerciseFragment default practiceMode being false.
+		toggleButton.setChecked(true);
 
         SharedPreferences settings = mCtx.getSharedPreferences(Main.PREFS_NAME, Activity.MODE_PRIVATE);
         Gson gson = new Gson();
@@ -94,10 +105,16 @@ public class ButtonGridFragment extends Fragment {
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
 		if (activity instanceof AnswerSelectedListener) {
-			listener = (AnswerSelectedListener) activity;
+			asListener = (AnswerSelectedListener) activity;
 		} else {
 			throw new ClassCastException(activity.toString()
 					+ " must implement ButtonGridFragment.AnswerSelectedListener");
+		}
+		if (activity instanceof PracticeModeToggleListener) {
+			pmListener = (PracticeModeToggleListener) activity;
+		} else {
+			throw new ClassCastException(activity.toString()
+					+ " must implement ButtonGridFragment.PracticeModeListener");
 		}
 	}
 
@@ -116,6 +133,13 @@ public class ButtonGridFragment extends Fragment {
 	 */
 	public interface AnswerSelectedListener {
 		public void onAnswerSelected(int position);
+	}
+
+	/**
+	 * Listener interface for Practice mode toggle button, any Activity that attaches this Fragment must implement this.
+	 */
+	public interface PracticeModeToggleListener {
+		public void onPracticeModeToggle();
 	}
 
 	/**
@@ -170,7 +194,7 @@ public class ButtonGridFragment extends Fragment {
 	}
 
 	private static void answerSelected(int position) {
-		listener.onAnswerSelected(position);
+		asListener.onAnswerSelected(position);
 	}
 
 	/**
@@ -182,7 +206,7 @@ public class ButtonGridFragment extends Fragment {
 	public void fadeButton(int position) {
 		Button b = (Button)tl.findViewById(position);
 		if(b != null) {
-			b.animate().setDuration(500).alpha((float) 0.2);
+			b.animate().setDuration(500).alpha((float) 0.5);
 			b.setClickable(false);
 		}
         mFadedButtonList.add(position);
