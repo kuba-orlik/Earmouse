@@ -25,8 +25,12 @@ import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.message.BasicHttpRequest;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -231,78 +235,66 @@ public class ModuleManagerActivity extends Activity implements ManagerListFragme
      */
     private class fetchAndInstallSelection extends AsyncTask<Void, Void, Integer> {
 
-        private AndroidHttpClient httpClient = null;
         private Context mCtx;
         private List<Module> removals;
 
         @Override
         protected Integer doInBackground(Void... params) {
 
-            httpClient = AndroidHttpClient.newInstance("Earmouse/" + Main.VERSION);
-            HttpHost host = new HttpHost(Main.SERVER_HOST, Main.SERVER_PORT);
             Integer installed = 0;
 
             for(Module mod : selection) {
                 if(mod == null)
                     continue;
 
-                String localizedModulePath = Main.SERVER_PATH + "module" + (Main.getLocaleSuffix().equals("") ? "_" : Main.getLocaleSuffix()) +
+                HttpURLConnection urlConn = null;
+                URL url = null;
+                String localizedModulePath = "module" + (Main.getLocaleSuffix().equals("") ? "_" : Main.getLocaleSuffix()) +
                         "_" + mod.getId() + ".json";
-                Log.d("DEBUG", "Trying to get: " + localizedModulePath);
-                BasicHttpRequest request = new BasicHttpRequest("GET", localizedModulePath);
 
-                HttpResponse response;
                 try {
-                    response = httpClient.execute(host, request);
+                    url = new URL(Main.SERVER_URL + localizedModulePath);
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                    cancel(false);
+                }
+
+                try {
+                    assert url != null;
+                    urlConn = (HttpURLConnection) url.openConnection();
                 } catch (IOException e) {
                     e.printStackTrace();
                     cancel(false);
-                    return installed;
                 }
 
-                HttpEntity entity;
-                if(response != null) {
-                    entity = response.getEntity();
-                } else {
-                    cancel(false);
-                    return installed;
-                }
-                if(entity != null) {
-                    Log.d("DEBUG", "entity.getContentLength() returns " + entity.getContentLength());
-                } else {
-                    cancel(false);
-                    return installed;
-                }
-
-                InputStreamReader reader;
+                InputStreamReader reader = null;
                 try {
-                    reader = new InputStreamReader(entity.getContent());
+                    assert urlConn != null;
+                    reader = new InputStreamReader(urlConn.getInputStream());
+                    Module result = new Module(mCtx, reader);
+
+                    // TODO: If an error occurred during the read, this module should not be written to disk ...
+                    if(result.writeModuleToJson()) {
+                        installed++;
+                        for (Module listMod : shownModuleList) {
+                            if (listMod.getId() == mod.getId()) {
+                                // We want to remove the items from the adapter straight away but have to do this on the UI thread.
+                                removals.add(listMod);
+                                break;
+                            }
+                        }
+                    }
+                    reader.close();
                 } catch (IllegalStateException | IOException e) {
                     e.printStackTrace();
                     cancel(false);
                     return installed;
+                } finally {
+                    assert urlConn != null;
+                    urlConn.disconnect();
                 }
 
-                Module result = new Module(mCtx, reader);
-                try {
-                    reader.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    cancel(false);
-                    return installed;
-                }
 
-                // TODO: If an error occurred during the read, this module should not be written to disk ...
-                if(result.writeModuleToJson()) {
-                    installed++;
-                    for (Module listMod : shownModuleList) {
-                        if (listMod.getId() == mod.getId()) {
-                            // We want to remove the items from the adapter straight away but have to do this on the UI thread.
-                            removals.add(listMod);
-                            break;
-                        }
-                    }
-                }
             }
             return installed;
         }
@@ -316,8 +308,6 @@ public class ModuleManagerActivity extends Activity implements ManagerListFragme
 
         @Override
         protected void onPostExecute(Integer installed) {
-            if(httpClient != null)
-                httpClient.close();
 
             // update ListView
             for(Module mod : removals)
@@ -353,7 +343,7 @@ public class ModuleManagerActivity extends Activity implements ManagerListFragme
      */
     private class FetchListJsonFromServer extends AsyncTask<Void, Void, List<Module>> {
 
-        private AndroidHttpClient httpClient = null;
+        //private AndroidHttpClient httpClient = null;
         private Context mCtx = null;
 
         @Override
@@ -363,9 +353,6 @@ public class ModuleManagerActivity extends Activity implements ManagerListFragme
 
         @Override
         protected void onPostExecute(List<Module> result) {
-
-            if(httpClient != null)
-                httpClient.close();
 
             if(result == null) {
                 Toast toast = Toast.makeText(mCtx, mCtx.getResources().getText(R.string.http_received_empty), Toast.LENGTH_LONG);
@@ -397,8 +384,6 @@ public class ModuleManagerActivity extends Activity implements ManagerListFragme
         @Override
         protected void onCancelled(List<Module> result) {
             // Task was cancelled as there was an error contacting server, show only an empty list and a Toast error message
-            if(httpClient != null)
-                httpClient.close();
 
             if(mCtx != null) {
 
@@ -416,49 +401,40 @@ public class ModuleManagerActivity extends Activity implements ManagerListFragme
 
         @Override
         protected List<Module> doInBackground(Void... params) {
-            httpClient = AndroidHttpClient.newInstance("Earmouse/" + Main.VERSION);
-            HttpHost host = new HttpHost(Main.SERVER_HOST, Main.SERVER_PORT);
-            BasicHttpRequest request = new BasicHttpRequest("GET", Main.SERVER_PATH + "list" + Main.getLocaleSuffix() +  ".json");
 
-            HttpResponse response;
+            HttpURLConnection urlConn = null;
+            URL url = null;
+            String localizedModulePath = "list" + Main.getLocaleSuffix() +  ".json";
+
             try {
-                response = httpClient.execute(host, request);
+                url = new URL(Main.SERVER_URL + localizedModulePath);
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+                cancel(false);
+            }
+
+            try {
+                assert url != null;
+                urlConn = (HttpURLConnection) url.openConnection();
             } catch (IOException e) {
                 e.printStackTrace();
                 cancel(false);
-                return null;
-            }
-
-            HttpEntity entity;
-            if(response != null) {
-                entity = response.getEntity();
-            } else {
-                cancel(false);
-                return null;
-            }
-            if(entity != null) {
-                Log.d("DEBUG", "entity.getContentLength() returns " + entity.getContentLength());
-            } else {
-                cancel(false);
-                return null;
             }
 
             InputStreamReader reader;
+            List<Module> moduleList;
+
             try {
-                reader = new InputStreamReader(entity.getContent());
+                assert urlConn != null;
+                reader = new InputStreamReader(urlConn.getInputStream());
+                moduleList = readListFromJson(reader);
             } catch (IllegalStateException | IOException e) {
                 e.printStackTrace();
                 cancel(false);
                 return null;
-            }
-
-            List<Module> moduleList;
-            try {
-                moduleList = readListFromJson(reader);
-            } catch (IOException e) {
-                e.printStackTrace();
-                cancel(false);
-                return null;
+            } finally {
+                assert urlConn != null;
+                urlConn.disconnect();
             }
 
             return moduleList;

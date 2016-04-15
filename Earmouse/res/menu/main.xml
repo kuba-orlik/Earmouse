@@ -4,8 +4,6 @@
 
      <!-- Temporarily disabled until i have a new host -->
     <item
-        android:enabled="false"
-        android:visible="false"
         android:id="@+id/action_manage"
         android:orderInCategory="1000"
         android:title="@string/action_manage"
