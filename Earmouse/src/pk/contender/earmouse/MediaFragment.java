@@ -62,9 +62,9 @@ public class MediaFragment extends Fragment {
     /** The amount of samples available */
     @SuppressWarnings("unused")
     private static final int SAMPLE_COUNT = 41;
-    /** The length of one sound in samples to make the sequence faster */
+    /** The length of one sound in samples to make the sequence faster (0 to play the whole unit) */
     private static final int SAMPLE_LENGTH = 20000;
-    /** The length of the overlap to smooth the transition */
+    /** The length of the overlap to smooth the transition (0 for no smoothing) */
     private static final int SAMPLE_OVERLAP = 2000;
 
     /** Set to true if requested to play media immediately after preparing it */
@@ -306,7 +306,9 @@ public class MediaFragment extends Fragment {
                 int len = exerciseUnitBuffer.length;
                 idx++;
                 try {
-                    if (SAMPLE_LENGTH > 0 && idx > 0) {
+                    // fading can be disabled by setting SAMPLE_OVERLAP to 0
+                    // don't fade for the first unit at all
+                    if (SAMPLE_OVERLAP > 0 && SAMPLE_LENGTH > 0 && idx > 0) {
                         // fade SAMPLE_OVERLAP from the previous sound out linearly
                         for (int i = 0; i < SAMPLE_OVERLAP * 4; i += 4) {
                             // handle both channels
