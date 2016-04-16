@@ -51,6 +51,7 @@ import java.util.Locale;
  */
 public class Main extends Activity implements ModuleListFragment.OnModuleSelectedListener,
         ButtonGridFragment.AnswerSelectedListener,
+        ButtonGridFragment.PracticeModeToggleListener,
         ConfirmDeleteDialog.ConfirmDeleteDialogListener,
         ConfirmResetDialog.ConfirmResetDialogListener {
 
@@ -556,5 +557,13 @@ public class Main extends Activity implements ModuleListFragment.OnModuleSelecte
     @Override
     public void onResetAbort(DialogFragment dialog) {
         mActionMode.finish(); // Action picked, so close the CAB
+    }
+
+    @Override
+    public void onPracticeModeToggle() {
+        ExerciseFragment fragment = (ExerciseFragment) getFragmentManager().findFragmentById(R.id.fragment_exercise);
+        if(fragment != null && fragment.isInLayout()) {
+            fragment.onPracticeModeToggle();
+        }
     }
 }
