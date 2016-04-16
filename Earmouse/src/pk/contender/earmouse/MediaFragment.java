@@ -308,7 +308,7 @@ public class MediaFragment extends Fragment {
                 try {
                     // fading can be disabled by setting SAMPLE_OVERLAP to 0
                     // don't fade for the first unit at all
-                    if (SAMPLE_OVERLAP > 0 && SAMPLE_LENGTH > 0 && idx > 0) {
+                    if (SAMPLE_OVERLAP > 0 && SAMPLE_LENGTH > 0 && idx > 1) {
                         // fade SAMPLE_OVERLAP from the previous sound out linearly
                         for (int i = 0; i < SAMPLE_OVERLAP * 4; i += 4) {
                             // handle both channels
