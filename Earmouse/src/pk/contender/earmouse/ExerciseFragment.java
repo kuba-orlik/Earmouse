@@ -46,6 +46,7 @@ public class ExerciseFragment extends Fragment {
     private static final String PREFERENCES_CURRENTEXERCISE = "preferences_currentExercise";
     private static final String PREFERENCES_EXERCISESTATE = "preferences_exerciseState";
     static final String PREFERENCES_ISFRESHINTENT = "preferences_isFreshIntent";
+    static final String PREFERENCES_PRACTICEMODE = "preferences_practiceMode";
 
     /**
      * The current state.
@@ -135,6 +136,8 @@ public class ExerciseFragment extends Fragment {
                     detailFragment.setDescription(mod.getDescription());
                 } else
                     Log.d("DEBUG", "ModuleDetailsFragment is null");
+
+                practiceMode = settings.getBoolean(PREFERENCES_PRACTICEMODE, false);
 
                 updateFeedbackStatistics();
             }
@@ -324,7 +327,7 @@ public class ExerciseFragment extends Fragment {
         SharedPreferences settings = mCtx.getSharedPreferences(Main.PREFS_NAME, Activity.MODE_PRIVATE);
         settings.edit().putBoolean(PREFERENCES_ISEMPTY, isEmpty).putInt(PREFERENCES_MODINDEX, modIndex)
                 .putInt(PREFERENCES_CURRENTEXERCISE, currentExercise).putInt(PREFERENCES_EXERCISESTATE, exerciseState)
-                .putInt(PREFERENCES_MODID, modId).apply();
+                .putInt(PREFERENCES_MODID, modId).putBoolean(PREFERENCES_PRACTICEMODE, practiceMode).apply();
     }
 
 
@@ -475,5 +478,6 @@ public class ExerciseFragment extends Fragment {
 
     public void onPracticeModeToggle() {
         practiceMode = !practiceMode;
+        Log.d("debug", "practiceMode is set to: " + (practiceMode ? "true" : "false"));
     }
 }

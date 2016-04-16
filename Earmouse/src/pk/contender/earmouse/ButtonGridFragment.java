@@ -72,10 +72,9 @@ public class ButtonGridFragment extends Fragment {
 				pmListener.onPracticeModeToggle();
 			}
 		});
-		// Default is Answer mode, corresponding with ExerciseFragment default practiceMode being false.
-		toggleButton.setChecked(true);
 
         SharedPreferences settings = mCtx.getSharedPreferences(Main.PREFS_NAME, Activity.MODE_PRIVATE);
+
         Gson gson = new Gson();
         Type listType = new TypeToken<ArrayList<String>>() {}.getType();
         mAnswerList = gson.fromJson(settings.getString(PREFERENCES_MANSWERLIST, null), listType);
@@ -93,7 +92,11 @@ public class ButtonGridFragment extends Fragment {
             }
         }
 
-        return view;
+		// Default is Answer mode, corresponding with ExerciseFragment default practiceMode being false.
+		boolean practiceMode = settings.getBoolean(ExerciseFragment.PREFERENCES_PRACTICEMODE, false);
+		toggleButton.setChecked(!practiceMode);
+
+		return view;
 	}
 
     /**

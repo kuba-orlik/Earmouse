@@ -327,13 +327,16 @@ public class MediaFragment extends Fragment {
 
         @Override
         protected void onPostExecute(Void result) {
-            setButtonImagePlay();
-            mPlayerReady = true;
-            if(playImmediately) {
-                playImmediately = false;
-                mPlayer.start();
-                setButtonImagePause();
+            if(mCtx != null) {
+                setButtonImagePlay();
+                mPlayerReady = true;
+                if(playImmediately) {
+                    playImmediately = false;
+                    mPlayer.start();
+                    setButtonImagePause();
+                }
             }
+
         }
 
     }
