@@ -313,8 +313,8 @@ public class MediaFragment extends Fragment {
                         for (int i = 0; i < SAMPLE_OVERLAP * 4; i += 4) {
                             // handle both channels
                             for (int j = 0; j < 4; j += 2) {
-                                short s1 = (short) (exerciseUnitBuffer[i+j] + (exerciseUnitBuffer[i+j + 1] << 8));
-                                short s2 = (short) (overlap[i+j] + (overlap[i+j + 1] << 8));
+                                short s1 = (short) ( (exerciseUnitBuffer[i+j] & 0xff) + ( (exerciseUnitBuffer[i+j + 1] & 0xff) << 8));
+                                short s2 = (short) ( (overlap[i+j] & 0xff) + ( (overlap[i+j + 1] & 0xff) << 8));
                                 int s = (int) (s1 + (1.0f - delta * i/4) * s2);
                                 //clip into range
                                 if (s > Short.MAX_VALUE) {
