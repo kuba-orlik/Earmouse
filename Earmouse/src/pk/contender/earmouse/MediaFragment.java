@@ -137,14 +137,14 @@ public class MediaFragment extends Fragment {
     }
 
     /**
-     * TODO: Should release MediaPlayer in onPause().
      * This would go well together with storing the current position in the media and restore that.
      */
     @Override
     public void onDestroy() {
         super.onDestroy();
         mPlayerReady = false;
-        mPlayer.release();
+        if(mPlayer != null)
+            mPlayer.release();
     }
 
     /**
@@ -251,6 +251,12 @@ public class MediaFragment extends Fragment {
 
         @Override
         protected Void doInBackground(Exercise... params) {
+
+            // for debug worker thread
+            if(android.os.Debug.isDebuggerConnected())
+                android.os.Debug.waitForDebugger();
+
+
             Exercise exercise = params[0];
             // List of all the samples to be concatenated
             List<byte []> exerciseUnitBufferList = new ArrayList<>();
@@ -335,6 +341,8 @@ public class MediaFragment extends Fragment {
                     mPlayer.start();
                     setButtonImagePause();
                 }
+            } else {
+                Log.d("DEBUG", "Null mCtx!");
             }
 
         }
@@ -427,7 +435,7 @@ public class MediaFragment extends Fragment {
             output[index + 1] = (byte) ((sum >> 8) & 0xff);
         }
 
-        Log.d("DEBUG", "Clipped sample percentage: " + (float)((float)clippedSamples / (float)((float)(outputSize - 44f) / 2f) * 100f));
+       // Log.d("DEBUG", "Clipped sample percentage: " + (float)((float)clippedSamples / (float)((float)(outputSize - 44f) / 2f) * 100f));
 
         // Close out input file descriptors
         for (LittleEndianDataInputStream sampleFd : samplesFdList) {

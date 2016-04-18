@@ -102,6 +102,7 @@ public class ExerciseFragment extends Fragment {
         SharedPreferences settings = mCtx.getSharedPreferences(Main.PREFS_NAME, Activity.MODE_PRIVATE);
         Bundle extras = mCtx.getIntent().getExtras();
         // Restore state
+        practiceMode = settings.getBoolean(PREFERENCES_PRACTICEMODE, false);
         // If started from an Intent and isFreshIntent, set that up and set isFreshIntent to false.
         if(extras != null && settings.getBoolean(PREFERENCES_ISFRESHINTENT, false)) {
             int position = extras.getInt(ExerciseActivity.EXTRA_POSITION);
@@ -137,7 +138,7 @@ public class ExerciseFragment extends Fragment {
                 } else
                     Log.d("DEBUG", "ModuleDetailsFragment is null");
 
-                practiceMode = settings.getBoolean(PREFERENCES_PRACTICEMODE, false);
+
 
                 updateFeedbackStatistics();
             }
