@@ -129,6 +129,7 @@ public class ExerciseFragment extends Fragment {
                         }
                     }
                     currentExercise = settings.getInt(PREFERENCES_CURRENTEXERCISE, 0);
+                    prepareExercise(false);
                 }
 
                 ModuleDetailsFragment detailFragment = (ModuleDetailsFragment) getFragmentManager().findFragmentById(R.id.moduledetail);
@@ -137,7 +138,6 @@ public class ExerciseFragment extends Fragment {
                     detailFragment.setDescription(mod.getDescription());
                 } else
                     Log.d("DEBUG", "ModuleDetailsFragment is null");
-
 
 
                 updateFeedbackStatistics();
@@ -185,7 +185,7 @@ public class ExerciseFragment extends Fragment {
 
         MediaFragment mediaFragment = (MediaFragment) getFragmentManager().findFragmentById(R.id.media);
         if(mediaFragment != null) {
-            mediaFragment.setEmpty();
+            //mediaFragment.setEmpty();
             v = mediaFragment.getView();
             if(v != null)
                 v.setVisibility(View.GONE);
@@ -307,7 +307,7 @@ public class ExerciseFragment extends Fragment {
             Log.d("DEBUG", "ButtonGridFragment is null");
 
         mod.refreshState();
-        prepareExercise();
+        prepareExercise(false);
         updateFeedbackStatistics();
     }
 
@@ -347,7 +347,7 @@ public class ExerciseFragment extends Fragment {
      * - Start the MediaFragment to prepare and load the required WAV file<br>
      * - Set up the FeedbackBarFragment to reflect the current state.
      */
-    private void prepareExercise(){
+    private void prepareExercise(boolean playNow){
         currentExercise = mod.getWeightedExerciseIndex();
 
         ButtonGridFragment buttonFragment = (ButtonGridFragment) getFragmentManager().findFragmentById(R.id.buttongrid);
@@ -358,7 +358,7 @@ public class ExerciseFragment extends Fragment {
 
         MediaFragment mediaFragment = (MediaFragment) getFragmentManager().findFragmentById(R.id.media);
         if(mediaFragment != null) {
-            mediaFragment.prepareExercise(mod.getExercise(currentExercise));
+            mediaFragment.prepareExercise(mod.getExercise(currentExercise), playNow);
         } else
             Log.d("DEBUG", "MediaFragment is null");
 
@@ -378,8 +378,8 @@ public class ExerciseFragment extends Fragment {
         MediaFragment mediaFragment = (MediaFragment) getFragmentManager().findFragmentById(R.id.media);
         if(mediaFragment != null) {
             if(exerciseState == EXERCISE_CONTINUE) {
-                prepareExercise();
-                mediaFragment.requestPlayback();
+                prepareExercise(true);
+                //mediaFragment.requestPlayback();
                 exerciseState = EXERCISE_READY;
             } else {
                 mediaFragment.clickPlay();
@@ -419,7 +419,7 @@ public class ExerciseFragment extends Fragment {
             }
         } else if(exerciseState == EXERCISE_CONTINUE) {
             // Prepare the next exercise
-            prepareExercise();
+            prepareExercise(false);
         }
         // Activity not ready to receive answer events, discard input.
     }
@@ -435,7 +435,7 @@ public class ExerciseFragment extends Fragment {
         Exercise ex = mod.getExercise(pos);
         MediaFragment mediaFragment = (MediaFragment) getFragmentManager().findFragmentById(R.id.media);
         if(mediaFragment != null) {
-            mediaFragment.playImmediately(ex);
+            mediaFragment.playPractice(ex);
         } else
             Log.d("DEBUG", "MediaFragment is null");
     }

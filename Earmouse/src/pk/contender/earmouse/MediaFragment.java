@@ -44,13 +44,7 @@ public class MediaFragment extends Fragment {
     private Context mCtx;
     private AssetManager mAssetMan;
     private MediaPlayer mPlayer = null;
-    /** Set to true if the MediaPlayer is ready to play an exercise */
-    private boolean mPlayerReady = false;
-    /** If true the next sample generated is to be played immediately and afterwards
-     * the sample for currentExercise is to be generated again
-     */
-    private boolean practiceSample = false;
-    /** The play/pause button displayed in {@link pk.contender.earmouse.ExerciseFragment}. */
+
     private ImageButton playButton;
     /** the bit rate of the samples we use to generate our exercises */
     private static final int SAMPLES_BITRATE = 16;
@@ -60,11 +54,45 @@ public class MediaFragment extends Fragment {
     @SuppressWarnings("unused")
     private static final int SAMPLE_COUNT = 41;
 
-    /** Set to true if requested to play media immediately after preparing it */
-    private boolean playImmediately = false;
-
     /** Current {@link pk.contender.earmouse.Exercise}, used for state management.*/
     private Exercise currentExercise = null;
+    private boolean playWhenReady;
+
+    /**
+     * Different states this object can be in:
+     * - Idle, mplayer is ready, nothing is playing, no exercise is ready to play
+     *      - Should be showing play button
+     *      - Should accept a new exercise to prepare
+     *      - Should not respond to clickPlay() from parent
+     * - Ready, mplayer is ready, nothing is playing, an exercise is prepared
+     *      - Should be showing play button
+     *      - Should accept a new exercise to prepare
+     *      - Should respond to clickPlay()
+     * - Playing, mplayer is playing
+     *      - Should be showing pause button
+     *      - Should accept a new exercise to prepare, but then stop playing.
+     *      - Should respond to clickPlay() to pause playback
+     * - Paused, mplayer is paused
+     *      - Should be showing Play button
+     *      - Should accept a new exercise to prepare
+     *      - Should respond to clickPlay() to resume playback
+     * - Preparing, asyncworker is preparing an exercise
+     *      - Should be showing Play button
+     *      - Should refuse to start preparing another exercise
+     *      - Should not respond to clickPlay()
+     *      - Should immediately play when ready when playWhenReady is set.
+     *  - Stopped, mplayer has finished playing an exercise
+     *      - Should be showing Play button
+     *      - Should accept a new exercise to prepare
+     *      - If this exercise was a practice exercise, should immediately prepare the original exercise
+     *      - Should respond to clickPlay(), in this case that meaks seek(0)
+     */
+    final private Object stateLock = new Object();
+    private boolean playingPracticeExercise;
+
+    private enum MediaPlayerState { IDLE, READY, PLAYING, PAUSED, PREPARING, STOPPED }
+    private MediaPlayerState mpState;
+
 
     /**
      * Set up MediaPlayer, Assets and a few listeners
@@ -78,7 +106,11 @@ public class MediaFragment extends Fragment {
         if(mCtx == null)
             Log.d("DEBUG", "Context is null in MediaFragment onCreate()");
 
-        mPlayer = new MediaPlayer();
+        synchronized (stateLock) {
+            mPlayer = new MediaPlayer();
+            mpState = MediaPlayerState.IDLE;
+        }
+
         mAssetMan = mCtx.getAssets();
 
         //Setup MediaPlayer listeners
@@ -86,26 +118,51 @@ public class MediaFragment extends Fragment {
 
             @Override
             public boolean onError(MediaPlayer mp, int what, int extra) {
-                Toast.makeText(mCtx, "MediaPlayer in ERROR state(" + what + ", " + extra, Toast.LENGTH_LONG).show();
+                Log.d("DEBUG", "MediaPlayer in ERROR state(" + what + ", " + extra);
+                Toast.makeText(mCtx, "Error playing sound, try restarting the app if problem persists.", Toast.LENGTH_SHORT).show();
                 return false;
             }
 
         });
-        //mPlayer.setOnPreparedListener(listener);
-        //mPlayer.setOnSeekCompleteListener(listener);
+        mPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mediaPlayer) {
+                synchronized (stateLock) {
+                    switch (mpState) {
+                        case PREPARING:
+                            if(playWhenReady) {
+                                mpState = MediaPlayerState.PLAYING;
+                                if (!playingPracticeExercise) setButtonImagePause();
+                                mPlayer.start();
+                            } else {
+                                mpState = MediaPlayerState.READY;
+                                setButtonImagePlay();
+                            }
+                            break;
+                        default:
+                            Log.d("DEBUG", "onPrepared(): Unexpected state " + mpState);
+                    }
+                }
+            }
+        });
         mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
 
             @Override
             public void onCompletion(MediaPlayer mp) {
-                //When finished playing a sample, seek back to the start and display the Play button.
-                if(mPlayerReady) {
-                    if(practiceSample) {
-                        prepareExercise(currentExercise);
-                    } else {
-                        mp.seekTo(0);
-                        setButtonImagePlay();
+                synchronized (stateLock) {
+                    switch (mpState) {
+                        case PLAYING:
+                            mpState = MediaPlayerState.STOPPED;
+                            setButtonImagePlay();
+                            if(playingPracticeExercise) {
+                                playingPracticeExercise = false;
+                                // TODO: prepare original exercise now.
+                                prepareExercise(currentExercise, false);
+                            }
+                            break;
+                        default:
+                            Log.d("DEBUG", "onCompletion(): unexpected state: " + mpState);
                     }
-
                 }
             }
         });
@@ -117,23 +174,27 @@ public class MediaFragment extends Fragment {
         playButton = (ImageButton) view.findViewById(R.id.play_button);
 
         // Restore state
+/*
         SharedPreferences settings = mCtx.getSharedPreferences(Main.PREFS_NAME, Activity.MODE_PRIVATE);
         Gson gson = new Gson();
         currentExercise = gson.fromJson(settings.getString(PREFERENCES_CURRENTEXERCISEOBJECT, null), Exercise.class);
         if(currentExercise != null) {
-            prepareExercise(currentExercise);
-            setButtonImagePlay();
-        }
+            synchronized (mpLock) {
+                //mPlayer.reset();
+                //mpState = MPlayerState.IDLE;
+                prepareExercise(currentExercise, false);
+            }
+        } */
         return view;
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
+/*
         SharedPreferences settings = mCtx.getSharedPreferences(Main.PREFS_NAME, Activity.MODE_PRIVATE);
         Gson gson = new Gson();
         settings.edit().putString(PREFERENCES_CURRENTEXERCISEOBJECT, gson.toJson(currentExercise)).apply();
-
-        super.onSaveInstanceState(outState);
+        super.onSaveInstanceState(outState); */
     }
 
     /**
@@ -142,9 +203,10 @@ public class MediaFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mPlayerReady = false;
-        if(mPlayer != null)
+        // No need for synchronized or state management, this Fragment is gone.
+        if(mPlayer != null) {
             mPlayer.release();
+        }
     }
 
     /**
@@ -154,25 +216,51 @@ public class MediaFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        if(mPlayerReady && mPlayer.isPlaying()) {
-            mPlayer.pause();
-            setButtonImagePause();
+        synchronized (stateLock) {
+            if(mpState == MediaPlayerState.PLAYING) {
+                mPlayer.pause();
+                setButtonImagePlay();
+                mpState = MediaPlayerState.PAUSED;
+            }
         }
     }
 
     /**
-     * Called when the Play button is clicked, if the MediaPlayer is ready for playback, start playback,
-     * if it is playing, pause playback, do nothing otherwise.
+     * Called when the Play button is clicked, the action taken depends on the current state of instance
      */
     public void clickPlay() {
-        if(mPlayer.isPlaying()) {
-            mPlayer.pause();
-            setButtonImagePlay();
-        } else if(mPlayerReady)  {
-            mPlayer.start();
-            setButtonImagePause();
-        } else
-            Log.d("DEBUG", "MediaFragment received play request but is not ready");
+        synchronized (stateLock) {
+            switch(mpState) {
+                case READY:
+                    mPlayer.start();
+                    mpState = MediaPlayerState.PLAYING;
+                    setButtonImagePause();
+                    break;
+                case PLAYING:
+                    // We dissociate the play button from the practice mode
+                    if (!playingPracticeExercise) {
+                        mPlayer.pause();
+                        mpState = MediaPlayerState.PAUSED;
+                        setButtonImagePlay();
+                    } else {
+                        Log.d("DEBUG", "clickPlay(): Ignoring playButton click in mpstate: " + mpState);
+                    }
+                    break;
+                case PAUSED:
+                    mPlayer.start();
+                    mpState = MediaPlayerState.PLAYING;
+                    setButtonImagePause();
+                    break;
+                case STOPPED:
+                    mPlayer.seekTo(0);
+                    mPlayer.start();
+                    mpState = MediaPlayerState.PLAYING;
+                    setButtonImagePause();
+                    break;
+                default:
+                    Log.d("DEBUG", "clickPlay(): Ignoring playButton click in mpstate: " + mpState);
+            }
+        }
     }
 
     /**
@@ -191,52 +279,37 @@ public class MediaFragment extends Fragment {
         playButton.setImageDrawable(res.getDrawable(android.R.drawable.ic_media_pause));
     }
 
-    public void setEmpty() {
-        mPlayerReady = false;
-    }
-
     /**
-     * Prepare and load a WAV file for the given Exercise.
-     * @param exercise The Exercise for which to prepare the MediaFragment
+     * Prepares an exercise to be played.
+     * @param exercise
+     * @param playNow
      */
-    public void prepareExercise(Exercise exercise) {
+    public void prepareExercise(Exercise exercise, boolean playNow) {
 
-        mPlayerReady = false;
-        practiceSample = false;
-        currentExercise = exercise;
-        mPlayer.reset(); // Get the Mediaplayer in Idle state before we can set a data source
-        new PrepareExerciseWorker().execute(exercise);
-    }
-
-    /**
-     * Called by ExerciseFragment when the user wants to hear one of the answers before trying
-     * to complete the exercise.
-     * Does not change currentExercise, but does have to generate a new .WAV and wriggle its
-     * way into any currently playing media.
-     * @param exercise The Exercise to play immediately
-     */
-    public void playImmediately(Exercise exercise) {
-        // Stop and reset the mediaPlayer
-        mPlayer.reset();
-        mPlayerReady = false;
-        // Generate our Wav and play it immediately
-        playImmediately = true;
-        practiceSample = true;
-        new PrepareExerciseWorker().execute(exercise);
-
-    }
-
-    /**
-     * Make a request to start playing media as soon as it is available, used when the App wants
-     * a single UI event to prepare an exercise and then play it.
-     */
-    public void requestPlayback() {
-        if(mPlayerReady) {
-            mPlayer.start();
-            setButtonImagePause();
-        } else {
-            playImmediately = true;
+        if (!playingPracticeExercise) {
+            currentExercise = exercise;
         }
+        synchronized (stateLock) {
+            switch(mpState) {
+                case PREPARING:
+                    Log.d("DEBUG", "prepareExercise(): refusing to prepare new exercise in state " + mpState);
+                    break;
+                case PLAYING:
+                    mPlayer.stop();
+                    mpState = MediaPlayerState.STOPPED;
+                    setButtonImagePlay();
+                default:
+                    playWhenReady = playNow;
+                    mpState = MediaPlayerState.PREPARING;
+                    new PrepareExerciseWorker().execute(exercise);
+                    break;
+            }
+        }
+    }
+
+    public void playPractice(Exercise exercise) {
+        playingPracticeExercise = true;
+        prepareExercise(exercise, true);
     }
 
     /**
@@ -311,17 +384,20 @@ public class MediaFragment extends Fragment {
             // Load this file into the MediaPlayer, mPlayer.prepare() is a blocking function but this
             // is an AsyncTask
             try {
-                // Get the Mediaplayer in Idle state before we can set a data source
-                // We already do this before starting the AsyncTask but it still gave state error exceptions.
-                mPlayer.reset();
-                mPlayer.setDataSource(mCtx.getFilesDir().getPath() + "/" + PREPARED_WAV_FILENAME);
-                mPlayer.prepare();
+                synchronized (stateLock) {
+                    if(mpState != MediaPlayerState.PREPARING) {
+                        Log.d("DEBUG", "PrepareExerciseWorker(): unexpected state: " + mpState);
+                    } else {
+                        mPlayer.reset();
+                        mPlayer.setDataSource(mCtx.getFilesDir().getPath() + "/" + PREPARED_WAV_FILENAME);
+                        mPlayer.prepareAsync();
+                    }
+                }
             } catch (IllegalArgumentException | SecurityException
                     | IllegalStateException | IOException e) {
                 e.printStackTrace();
                 cancel(true);
             }
-
             return null;
         }
 
@@ -333,21 +409,8 @@ public class MediaFragment extends Fragment {
 
         @Override
         protected void onPostExecute(Void result) {
-            if(mCtx != null) {
-                setButtonImagePlay();
-                mPlayerReady = true;
-                if(playImmediately) {
-                    playImmediately = false;
-                    mPlayer.start();
-                    setButtonImagePause();
-                }
-            } else {
-                Log.d("DEBUG", "Null mCtx!");
-            }
-
         }
-
-    }
+}
 
     /**
      * Mixes the samples associated with the given List of Integers
