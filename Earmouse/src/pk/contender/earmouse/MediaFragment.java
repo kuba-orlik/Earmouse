@@ -26,7 +26,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+
+import static java.lang.Math.min;
 
 
 /**
@@ -59,6 +62,10 @@ public class MediaFragment extends Fragment {
     /** The amount of samples available */
     @SuppressWarnings("unused")
     private static final int SAMPLE_COUNT = 41;
+    /** The length of one sound in samples to make the sequence faster (0 to play the whole unit) */
+    private static final int SAMPLE_LENGTH = 20000;
+    /** The length of the overlap to smooth the transition (0 for no smoothing) */
+    private static final int SAMPLE_OVERLAP = 2000;
 
     /** Set to true if requested to play media immediately after preparing it */
     private boolean playImmediately = false;
@@ -272,10 +279,17 @@ public class MediaFragment extends Fragment {
             // At this point we have a list of all the exerciseUnits that are to be
             // concatenated.
 
-            int totalSize = 0;
-            for (byte [] buf : exerciseUnitBufferList)
-                totalSize += buf.length;
-            totalSize += 44;
+	    // start with the length of the WAV header
+            int totalSize = 44;
+            int unitLen = 0;
+            int bufLen = 0;
+            for (byte [] buf : exerciseUnitBufferList) {
+                bufLen = buf.length;
+                unitLen = SAMPLE_LENGTH > 0 ? min(bufLen, SAMPLE_LENGTH*4) : bufLen;
+                totalSize += unitLen;
+            }
+            // now add the rest of the last buffer
+            totalSize += bufLen - unitLen;
             // totalSize is now the total size of our output data + the size of a WAV header (44 bytes)
 
             byte [] header = createWavHeader(totalSize, outputSamplerate, outputBitrate);
@@ -289,9 +303,45 @@ public class MediaFragment extends Fragment {
                 cancel(true);
             }
             // And all the exerciseUnitBuffers
+            int exerciseLen = exerciseUnitBufferList.size();
+            int idx = 0;
+            // buffer has format Lin16 with 2 channels = 4 Bytes per Sample
+            byte [] overlap = new byte[SAMPLE_OVERLAP * 4];
+            float delta = 1.0f / (SAMPLE_OVERLAP);
             for(byte [] exerciseUnitBuffer : exerciseUnitBufferList) {
+                int len = exerciseUnitBuffer.length;
+                idx++;
                 try {
-                    outputStream.write(exerciseUnitBuffer);
+                    // fading can be disabled by setting SAMPLE_OVERLAP to 0
+                    // don't fade for the first unit at all
+                    if (SAMPLE_OVERLAP > 0 && SAMPLE_LENGTH > 0 && idx > 1) {
+                        // fade SAMPLE_OVERLAP from the previous sound out linearly
+                        for (int i = 0; i < SAMPLE_OVERLAP * 4; i += 4) {
+                            // handle both channels
+                            for (int j = 0; j < 4; j += 2) {
+                                short s1 = (short) ( (exerciseUnitBuffer[i+j] & 0xff) + ( (exerciseUnitBuffer[i+j + 1] & 0xff) << 8));
+                                short s2 = (short) ( (overlap[i+j] & 0xff) + ( (overlap[i+j + 1] & 0xff) << 8));
+                                int s = (int) (s1 + (1.0f - delta * i/4) * s2);
+                                //clip into range
+                                if (s > Short.MAX_VALUE) {
+                                    s = Short.MAX_VALUE;
+                                } else if (s < Short.MIN_VALUE) {
+                                    s = Short.MIN_VALUE;
+                                }
+                                exerciseUnitBuffer[i+j] = (byte) (s & 0xff);
+                                exerciseUnitBuffer[i+j + 1] = (byte) ((s >> 8) & 0xff);
+                            }
+                        }
+                    }
+                    if (SAMPLE_LENGTH == 0 || idx == exerciseLen) {
+                        outputStream.write(exerciseUnitBuffer);
+                    } else {
+                        unitLen = min(len, SAMPLE_LENGTH * 4);
+                        byte [] part = Arrays.copyOfRange(exerciseUnitBuffer, 0, unitLen);
+                        outputStream.write(part);
+                        // save overlap part after the one we have just written
+                        overlap = Arrays.copyOfRange(exerciseUnitBuffer, unitLen, min (unitLen + SAMPLE_OVERLAP * 4, len) );
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                     cancel(true);
