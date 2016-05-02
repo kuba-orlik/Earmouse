@@ -80,6 +80,7 @@ public class Main extends Activity implements ModuleListFragment.OnModuleSelecte
 
     /* SharedPreferences constants */
     private static final String PREFS_FIRSTLAUNCH = "prefs_firstlaunch";
+    public static final String PREFS_FASTPLAY = "prefs_fastplay";
     //private static final String PREFS_SELECTIONINDEX = "prefs_main_selectionindex";
     public static final String PREFS_NAME = "EarmousePrefs";
 
@@ -278,30 +279,36 @@ public class Main extends Activity implements ModuleListFragment.OnModuleSelecte
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        if (id == R.id.action_manage) {
-            Intent intent = new Intent(getApplicationContext(), ModuleManagerActivity.class);
-            startActivity(intent);
-            return true;
-        } else if(id == R.id.action_about) {
-            String text = String.format(getResources().getString(R.string.about_message), VERSION);
-            CharSequence styledText = Html.fromHtml(text);
-            final AlertDialog d = new AlertDialog.Builder(this)
-                    .setTitle(R.string.about_title)
-                    .setMessage(styledText)
-                    .setCancelable(true)
+        switch(id) {
+            case R.id.action_manage:
+                Intent intent = new Intent(getApplicationContext(), ModuleManagerActivity.class);
+                startActivity(intent);
+                return true;
+            case R.id.action_about:
+                String text = String.format(getResources().getString(R.string.about_message), VERSION);
+                CharSequence styledText = Html.fromHtml(text);
+                final AlertDialog d = new AlertDialog.Builder(this)
+                        .setTitle(R.string.about_title)
+                        .setMessage(styledText)
+                        .setCancelable(true)
 
-                    .create();
-            mDialog = d;
-            d.show();
+                        .create();
+                mDialog = d;
+                d.show();
 
-            // Make text a bit smaller
-            TextView dialogView = (TextView) d.findViewById(android.R.id.message);
-            dialogView.setTextSize(14);
+                // Make text a bit smaller
+                TextView dialogView = (TextView) d.findViewById(android.R.id.message);
+                dialogView.setTextSize(14);
 
-            // ??
-            ((TextView) d.findViewById(android.R.id.message)).setMovementMethod(LinkMovementMethod.getInstance());
+                // ??
+                ((TextView) d.findViewById(android.R.id.message)).setMovementMethod(LinkMovementMethod.getInstance());
 
-            return true;
+                return true;
+            case R.id.action_prefs:
+                intent = new Intent();
+                intent.setClass(getApplicationContext(), SettingsActivity.class);
+                startActivity(intent);
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }

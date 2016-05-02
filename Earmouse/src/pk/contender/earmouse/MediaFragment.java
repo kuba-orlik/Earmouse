@@ -56,10 +56,15 @@ public class MediaFragment extends Fragment {
     /** The amount of samples available */
     @SuppressWarnings("unused")
     private static final int SAMPLE_COUNT = 41;
-    /** The length of one sound in samples to make the sequence faster (0 to play the whole unit) */
+
+    /** Default values for fast playback mode */
     private static final int SAMPLE_LENGTH = 20000;
-    /** The length of the overlap to smooth the transition (0 for no smoothing) */
     private static final int SAMPLE_OVERLAP = 2000;
+
+    /** The length of one sound in samples to make the sequence faster (0 to play the whole unit) */
+    private int sample_length = 0;
+    /** The length of the overlap to smooth the transition (0 for no smoothing) */
+    private int sample_overlap = 0;
 
     /** Current {@link pk.contender.earmouse.Exercise}, used for state management.*/
     private Exercise currentExercise = null;
@@ -193,6 +198,18 @@ public class MediaFragment extends Fragment {
             }
         } */
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        SharedPreferences prefs = mCtx.getSharedPreferences(Main.PREFS_NAME, Activity.MODE_PRIVATE);
+        if(prefs.getBoolean(Main.PREFS_FASTPLAY, false)) {
+            sample_length = SAMPLE_LENGTH;
+            sample_overlap = SAMPLE_OVERLAP;
+        } else {
+            sample_length = sample_overlap = 0;
+        }
     }
 
     @Override
@@ -358,7 +375,7 @@ public class MediaFragment extends Fragment {
             int bufLen = 0;
             for (byte [] buf : exerciseUnitBufferList) {
                 bufLen = buf.length;
-                unitLen = SAMPLE_LENGTH > 0 ? min(bufLen, SAMPLE_LENGTH*4) : bufLen;
+                unitLen = sample_length > 0 ? min(bufLen, sample_length*4) : bufLen;
                 totalSize += unitLen;
             }
             // now add the rest of the last buffer
@@ -379,17 +396,17 @@ public class MediaFragment extends Fragment {
             int exerciseLen = exerciseUnitBufferList.size();
             int idx = 0;
             // buffer has format Lin16 with 2 channels = 4 Bytes per Sample
-            byte [] overlap = new byte[SAMPLE_OVERLAP * 4];
-            float delta = 1.0f / (SAMPLE_OVERLAP);
+            byte [] overlap = new byte[sample_overlap * 4];
+            float delta = 1.0f / (sample_overlap);
             for(byte [] exerciseUnitBuffer : exerciseUnitBufferList) {
                 int len = exerciseUnitBuffer.length;
                 idx++;
                 try {
                     // fading can be disabled by setting SAMPLE_OVERLAP to 0
                     // don't fade for the first unit at all
-                    if (SAMPLE_OVERLAP > 0 && SAMPLE_LENGTH > 0 && idx > 1) {
+                    if (sample_overlap > 0 && sample_length > 0 && idx > 1) {
                         // fade SAMPLE_OVERLAP from the previous sound out linearly
-                        for (int i = 0; i < SAMPLE_OVERLAP * 4; i += 4) {
+                        for (int i = 0; i < sample_overlap * 4; i += 4) {
                             // handle both channels
                             for (int j = 0; j < 4; j += 2) {
                                 short s1 = (short) ( (exerciseUnitBuffer[i+j] & 0xff) + ( (exerciseUnitBuffer[i+j + 1] & 0xff) << 8));
@@ -406,14 +423,14 @@ public class MediaFragment extends Fragment {
                             }
                         }
                     }
-                    if (SAMPLE_LENGTH == 0 || idx == exerciseLen) {
+                    if (sample_length == 0 || idx == exerciseLen) {
                         outputStream.write(exerciseUnitBuffer);
                     } else {
-                        unitLen = min(len, SAMPLE_LENGTH * 4);
+                        unitLen = min(len, sample_length * 4);
                         byte [] part = Arrays.copyOfRange(exerciseUnitBuffer, 0, unitLen);
                         outputStream.write(part);
                         // save overlap part after the one we have just written
-                        overlap = Arrays.copyOfRange(exerciseUnitBuffer, unitLen, min (unitLen + SAMPLE_OVERLAP * 4, len) );
+                        overlap = Arrays.copyOfRange(exerciseUnitBuffer, unitLen, min (unitLen + sample_overlap * 4, len) );
                     }
                 } catch (IOException e) {
                     e.printStackTrace();

@@ -63,6 +63,8 @@
     <string name="cab_installed">installiert</string>
     <string name="cab_reset">zurückgesetzt</string>
     <string name="list_no_modules_available">Keine neuen Module verfügbar</string>
+    <string name="preferences_fastplay_title">Use faster sample playback</string>
+    <string name="preferences_fastplay_summary">Speeds up the playback of exercises</string>
 
     <plurals name="plural_exercise">
         <item quantity="one">Übung</item>

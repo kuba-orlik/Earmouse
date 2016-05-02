@@ -11,27 +11,27 @@
     <string name="title_activity_manager_detail">Module</string>
     <string name="title_activity_exercise">Exercise</string>
     <string name="title_activity_module_manager">Add modules</string>
-    
+
     <string name="feedback_ready">Exercise ready, press play!</string>
     <string name="feedback_incorrect">Incorrect, try again!</string>
     <string name="feedback_correct">Correct, tap any button to continue!</string>
     <string name="feedback_successrate_value">Success rate: </string>
     <string name="feedback_successrate_nodata">Success rate: no data available</string>
-    
+
     <string name="stats_rate">Success rate: </string>
 
     <string name="no_module_selected">No module selected</string>
 
     <string name="content_description_playbutton">Play button</string>
     <string name="content_description_difficulty_icon">Icon to indicate module difficulty</string>
-    
+
     <string name="manager_installed_subscript">installed</string>
     <string name="manager_notinstalled_subscript">not installed</string>
     <string name="manager_install_button">Install</string>
     <string name="manager_uninstall_button">Uninstall</string>
-    
+
     <string name="media_error_preparing">Error preparing media</string>
-    
+
     <string name="http_received_empty">Received empty reply from server</string>
     <string name="http_error">Error contacting server</string>
 
@@ -51,7 +51,7 @@
         Stefan Hamacher (German localization)
         &lt;/p>
     </string>
-    
+
     <string name="mainlist_successrate" formatted="false">%1$d%% success rate after %2$d</string>
     <string name="list_no_modules_installed">No modules installed</string>
     <string name="toast_module_installed">Module successfully installed</string>
@@ -72,8 +72,12 @@
         <item quantity="one">module</item>
         <item quantity="other">modules</item>
     </plurals>
-    
-    
-    
+    <string name="title_activity_settings">Settings</string>
+
+    <!-- Strings related to Settings -->
+
+    <string name="prefs_fastplay" translatable="false">prefs_fastplay</string>
+    <string name="preferences_fastplay_title">Enable fast playback</string>
+    <string name="preferences_fastplay_summary">Speeds up the playback of exercises</string>
 
 </resources>
