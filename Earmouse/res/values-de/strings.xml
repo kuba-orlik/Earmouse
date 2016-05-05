@@ -48,6 +48,7 @@
         oder besucht die &lt;a href="https://play.google.com/store/apps/details?id=pk.contender.earmouse" name="Link zum Playstore">Store-Seite&lt;/a>!&lt;/p>
         &lt;p>Besonderen Dank an:&lt;br>
         J.W. Klinkenberg (Tests)&lt;br>
+        Uwe Koloska (Programmierung, Tests)&lt;br>
         Stefan Hamacher (deutsche Übersetzung)
         &lt;/p>
     </string>
@@ -63,8 +64,6 @@
     <string name="cab_installed">installiert</string>
     <string name="cab_reset">zurückgesetzt</string>
     <string name="list_no_modules_available">Keine neuen Module verfügbar</string>
-    <string name="preferences_fastplay_title">Use faster sample playback</string>
-    <string name="preferences_fastplay_summary">Speeds up the playback of exercises</string>
 
     <plurals name="plural_exercise">
         <item quantity="one">Übung</item>
@@ -75,5 +74,8 @@
         <item quantity="one">Modul</item>
         <item quantity="other">Module</item>
     </plurals>
+    <string name="preferences_fastplay_summary">Beschleunigt die Wiedergabe der Übungen</string>
+    <string name="preferences_fastplay_title">Schnelle Wiedergabe aktivieren</string>
+    <string name="title_activity_settings">Einstellungen</string>
 
 </resources>
