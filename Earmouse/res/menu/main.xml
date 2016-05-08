@@ -19,7 +19,7 @@
     <item
         android:id="@+id/action_prefs"
         android:orderInCategory="1500"
-        android:title="Settings"
+        android:title="@string/action_settings"
         android:showAsAction="never" />
     
 </menu>

@@ -77,5 +77,7 @@
     <string name="preferences_fastplay_summary">Beschleunigt die Wiedergabe der Übungen</string>
     <string name="preferences_fastplay_title">Schnelle Wiedergabe aktivieren</string>
     <string name="title_activity_settings">Einstellungen</string>
+    <string name="buttongrid_answermode">Antwortmodus</string>
+    <string name="buttongrid_practicemode">Übungsmodus</string>
 
 </resources>

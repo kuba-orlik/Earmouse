@@ -80,5 +80,8 @@
     <string name="prefs_fastplay" translatable="false">prefs_fastplay</string>
     <string name="preferences_fastplay_title">Enable fast playback</string>
     <string name="preferences_fastplay_summary">Speeds up the playback of exercises</string>
+    <string name="buttongrid_practicemode">Practice mode</string>
+    <string name="buttongrid_answermode">Answer mode</string>
+
 
 </resources>

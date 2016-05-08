@@ -16,8 +16,8 @@
             app:layout_widthPercent="50%"
             app:layout_marginLeftPercent="25%"
             android:layout_height="wrap_content"
-            android:textOff="Practice mode"
-            android:textOn="Answer mode"
+            android:textOff="@string/buttongrid_practicemode"
+            android:textOn="@string/buttongrid_answermode"
             android:id="@+id/toggleButton" />
 
     </android.support.percent.PercentRelativeLayout>
