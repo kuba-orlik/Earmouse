@@ -82,7 +82,7 @@ public class ButtonGridFragment extends Fragment {
         mFadedButtonList = gson.fromJson(settings.getString(PREFERENCES_MFADEDBUTTONLIST, null), listType);
         if (mAnswerList != null)
             buildGrid();
-        if (mFadedButtonList != null) {
+        if (mFadedButtonList != null && tl != null) {
             for (Integer i : mFadedButtonList) {
                 Button b = (Button)tl.findViewById(i);
                 if(b != null) {
@@ -207,12 +207,14 @@ public class ButtonGridFragment extends Fragment {
 	 * @param position The position of the Button to fade out.
 	 */
 	public void fadeButton(int position) {
-		Button b = (Button)tl.findViewById(position);
-		if(b != null) {
-			b.animate().setDuration(500).alpha((float) 0.5);
-			b.setClickable(false);
+		if(tl != null) {
+			Button b = (Button)tl.findViewById(position);
+			if(b != null) {
+				b.animate().setDuration(500).alpha((float) 0.5);
+				b.setClickable(false);
+			}
+			mFadedButtonList.add(position);
 		}
-        mFadedButtonList.add(position);
 	}
 
 	/**
@@ -223,13 +225,16 @@ public class ButtonGridFragment extends Fragment {
 	public void resetGridButtonState() {
 		int i = 0;
 		Button b;
-		while((b = (Button)tl.findViewById(i)) != null) {
-            b.animate().cancel();
-			b.setAlpha(1.0f);
-			b.setClickable(true);
-			i++;
+		if(tl != null) {
+			while((b = (Button)tl.findViewById(i)) != null) {
+				b.animate().cancel();
+				b.setAlpha(1.0f);
+				b.setClickable(true);
+				i++;
+			}
+			mFadedButtonList = new ArrayList<>();
 		}
-        mFadedButtonList = new ArrayList<>();
+
 	}
 	
 	/**
