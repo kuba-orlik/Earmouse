@@ -362,15 +362,17 @@ public class ModuleManagerActivity extends Activity implements ManagerListFragme
 
             List<Integer> idsToRemove = new ArrayList<>();
 
-            for(Module mod : Main.getModuleList())
-                idsToRemove.add(mod.getId());
             for(Module mod : shownModuleList)
                 idsToRemove.add(mod.getId());
-            // idsToRemove now contains all the Module IDS that are either are already installed or
-            // already shown in the list so need not be added.
-            for(Module mod : result)
-                if(!idsToRemove.contains(mod.getId()))
-                    shownModuleList.add(mod);
+            // idsToRemove now contains all the Module IDS that are already shown in the list so need not be added.
+            Module modLocal;
+            for(Module mod : result) {
+                if (!idsToRemove.contains(mod.getId())) {
+                    if ((modLocal = Main.getModuleById(mod.getId())) == null || modLocal.getModuleVersion() < mod.getModuleVersion()) {
+                        shownModuleList.add(mod);
+                    }
+                }
+            }
 
             Collections.sort(shownModuleList);
 

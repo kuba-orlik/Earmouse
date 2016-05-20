@@ -13,6 +13,7 @@ import android.content.res.Resources;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.StrictMode;
+import android.support.annotation.Nullable;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
@@ -386,6 +387,21 @@ public class Main extends Activity implements ModuleListFragment.OnModuleSelecte
      */
     static public List<Module> getModuleList() {
         return mModules;
+    }
+
+    /**
+     * Returns the module with given id or null if not found
+     * @param id
+     * @return found module or null
+     */
+    @Nullable
+    static public Module getModuleById(int id) {
+        for(Module mod : mModules) {
+            if (mod.getId() == id) {
+                return mod;
+            }
+        }
+        return null;
     }
 
     /**
