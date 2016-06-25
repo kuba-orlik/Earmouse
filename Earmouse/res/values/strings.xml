@@ -78,6 +78,10 @@
     <!-- Strings related to Settings -->
 
     <string name="prefs_fastplay" translatable="false">prefs_fastplay</string>
+    <string name="prefs_custom_host_toggle" translatable="false">prefs_custom_host_toggle</string>
+    <string name="prefs_custom_hostname" translatable="false">prefs_custom_host</string>
+    <string name="prefs_custom_path" translatable="false" >prefs_custom_path</string>
+    <string name="prefs_custom_port" translatable="false" >prefs_custom_port</string>
     <string name="preferences_fastplay_title">Enable fast playback</string>
     <string name="preferences_fastplay_summary">Speeds up the playback of exercises</string>
     <string name="buttongrid_practicemode">Practice mode</string>

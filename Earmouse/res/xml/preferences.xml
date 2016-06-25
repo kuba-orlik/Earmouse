@@ -5,4 +5,29 @@
         android:title="@string/preferences_fastplay_title"
         android:summary="@string/preferences_fastplay_summary"
         android:defaultValue="false" />
+
+    <CheckBoxPreference
+        android:key="@string/prefs_custom_host_toggle"
+        android:title="Custom Module host"
+        android:summary="Use a custom location to host your own Modules"
+        android:defaultValue="false" />
+    <pk.contender.earmouse.CustomEditTextPreference
+        android:dependency="@string/prefs_custom_host_toggle"
+        android:key="@string/prefs_custom_hostname"
+        android:singleLine="true"
+        android:title="Custom host name"
+        android:defaultValue="pklinken.github.io" />
+    <pk.contender.earmouse.CustomEditTextPreference
+        android:dependency="@string/prefs_custom_host_toggle"
+        android:key="@string/prefs_custom_path"
+        android:singleLine="true"
+        android:title="Custom host path"
+        android:defaultValue="/Earmouse/Earmouse_localized/" />
+    <pk.contender.earmouse.CustomEditTextPreference
+        android:dependency="@string/prefs_custom_host_toggle"
+        android:key="@string/prefs_custom_port"
+        android:singleLine="true"
+        android:title="Custom host port"
+        android:numeric="integer"
+        android:defaultValue="80" />
 </PreferenceScreen>

@@ -61,13 +61,13 @@ public class Main extends Activity implements ModuleListFragment.OnModuleSelecte
      */
     public static final String VERSION = "v1.2";
 
-    /** The server address to use for fetching remote data */
+    /** The default server address to use for fetching remote data */
     public static final String SERVER_HOST = "pklinken.github.io";
-    /** The server port to use for fetching remote data */
+    /** The default server port to use for fetching remote data */
     public static final int SERVER_PORT = 80;
-    /** The path on the server where the data can be found */
+    /** The default path on the server where the data can be found */
     public static final String SERVER_PATH = "/Earmouse/Earmouse_localized/";
-    /** The full url */
+    /** The full default url */
     public static final String SERVER_URL = "http://" + SERVER_HOST + ":" + SERVER_PORT + SERVER_PATH;
     /** Available locales */
     public static final String[] SUPPORTED_LOCALES = { "de" };
@@ -83,6 +83,10 @@ public class Main extends Activity implements ModuleListFragment.OnModuleSelecte
     public static final String PREFS_FASTPLAY = "prefs_fastplay";
     //private static final String PREFS_SELECTIONINDEX = "prefs_main_selectionindex";
     public static final String PREFS_NAME = "EarmousePrefs";
+    private static final String PREFS_USE_CUSTOM_HOST = "prefs_custom_host_toggle";
+    private static final String PREFS_CUSTOM_HOSTNAME = "prefs_custom_host";
+    private static final String PREFS_CUSTOM_PATH = "prefs_custom_path";
+    private static final String PREFS_CUSTOM_PORT = "prefs_custom_port";
 
     /**
      * reference to the Activity's ActionMode, is null if the Activity is not in ActionMode
@@ -571,6 +575,25 @@ public class Main extends Activity implements ModuleListFragment.OnModuleSelecte
         ExerciseFragment fragment = (ExerciseFragment) getFragmentManager().findFragmentById(R.id.fragment_exercise);
         if(fragment != null && fragment.isInLayout()) {
             fragment.onPracticeModeToggle();
+        }
+    }
+
+    /**
+     * Returns an URL used for installing new Modules based on the user's preferences.
+     * @param ctx The application context required to access the SharedPreferences
+     * @return The default or user-customized URL for installing new Modules
+     */
+    public static String generateModuleUrl(Context ctx) {
+        SharedPreferences s = ctx.getSharedPreferences(Main.PREFS_NAME, MODE_PRIVATE);
+
+        if(s.getBoolean(Main.PREFS_USE_CUSTOM_HOST, false)) {
+            String hostname, path, port;
+            hostname = s.getString(Main.PREFS_CUSTOM_HOSTNAME, SERVER_HOST);
+            path = s.getString(Main.PREFS_CUSTOM_PATH, SERVER_PATH);
+            port = s.getString(Main.PREFS_CUSTOM_PORT, String.valueOf(SERVER_PORT));
+            return "http://" + hostname + ":" + port + path;
+        } else {
+            return "http://" + SERVER_HOST + ":" + SERVER_PORT + SERVER_PATH;
         }
     }
 }

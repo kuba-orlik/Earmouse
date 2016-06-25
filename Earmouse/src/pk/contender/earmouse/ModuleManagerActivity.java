@@ -253,7 +253,7 @@ public class ModuleManagerActivity extends Activity implements ManagerListFragme
                         "_" + mod.getId() + ".json";
 
                 try {
-                    url = new URL(Main.SERVER_URL + localizedModulePath);
+                    url = new URL(Main.generateModuleUrl(getApplicationContext()) + localizedModulePath);
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
                     cancel(false);
@@ -262,6 +262,8 @@ public class ModuleManagerActivity extends Activity implements ManagerListFragme
                 try {
                     assert url != null;
                     urlConn = (HttpURLConnection) url.openConnection();
+                    // Limit the time the user sits and waits for a malformed custom URL to timeout
+                    urlConn.setConnectTimeout(5000);
                 } catch (IOException e) {
                     e.printStackTrace();
                     cancel(false);
@@ -407,7 +409,7 @@ public class ModuleManagerActivity extends Activity implements ManagerListFragme
             String localizedModulePath = "list" + Main.getLocaleSuffix() +  ".json";
 
             try {
-                url = new URL(Main.SERVER_URL + localizedModulePath);
+                url = new URL(Main.generateModuleUrl(getApplicationContext()) + localizedModulePath);
             } catch (MalformedURLException e) {
                 e.printStackTrace();
                 cancel(false);
@@ -416,6 +418,8 @@ public class ModuleManagerActivity extends Activity implements ManagerListFragme
             try {
                 assert url != null;
                 urlConn = (HttpURLConnection) url.openConnection();
+                // Limit the time the user sits and waits for a malformed custom URL to timeout
+                urlConn.setConnectTimeout(5000);
             } catch (IOException e) {
                 e.printStackTrace();
                 cancel(false);
