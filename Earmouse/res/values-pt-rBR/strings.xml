@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Earmouse</string>
+    <string name="action_settings">Configurações</string>
+    <string name="action_reset">Redefinir Histórico</string>
+    <string name="action_manage">Adicionar Módulos</string>
+    <string name="action_delete">Excluir</string>
+    <string name="action_about">Sobre</string>
+    <string name="title_activity_detail">Módulo</string>
+    <string name="title_activity_manager_detail">Módulo</string>
+    <string name="title_activity_exercise">Exercitar</string>
+    <string name="title_activity_module_manager">Adicionar Módulos</string>
+
+    <string name="feedback_ready">Exercício pronto, clique jogar!</string>
+    <string name="feedback_incorrect">Incorreto, tente de novo!</string>
+    <string name="feedback_correct">Correto, aperter qualquer botão para continuar!</string>
+    <string name="feedback_successrate_value">Taxa de sucesso: </string>
+    <string name="feedback_successrate_nodata">Taxa de sucesso: nenhum dado disponível</string>
+
+    <string name="stats_rate">Taxa de sucesso: </string>
+
+    <string name="no_module_selected">Nenhum módulo selecionado</string>
+
+    <string name="content_description_playbutton">Botão Jogar</string>
+    <string name="content_description_difficulty_icon">Ícone para mostrar dificuldade do módulo</string>
+
+    <string name="manager_installed_subscript">instalado</string>
+    <string name="manager_notinstalled_subscript">não instalado</string>
+    <string name="manager_install_button">Instalar</string>
+    <string name="manager_uninstall_button">Desinstalar</string>
+
+    <string name="media_error_preparing">Erro ao preparar mídia</string>
+
+    <string name="http_received_empty">Resposta vazia recebida do servidor</string>
+    <string name="http_error">Erro ao contatar servidor</string>
+
+    <string name="dialog_delete">Você tem certeza que deseja excluir todos os itens selecionados?\nTodos os dados de estatística serão perdidos</string>
+    <string name="dialog_deleteconfirm">Excluir</string>
+    <string name="dialog_deleteabort">Cancelar</string>
+    <string name="dialog_reset">Você tem certeza que deseja redefinir os itens selecionados?\nTodos os dados de estatística serão perdidos</string>
+    <string name="dialog_resetconfirm">Redefinir</string>
+    <string name="dialog_resetabort">Cancelar</string>
+
+    <string name="about_title">Sobre Earmouse</string>
+    <string name="about_message">&lt;p>Earmouse %1$s by Paul Klinkenberg&lt;/p>
+        &lt;p>Se você possui qualquer dúvida, sugestão ou comentário, por favor me contate por &lt;a href="mailto:pklinken.development@gmail.com">mail&lt;/a>
+        ou visite a &lt;a href="https://play.google.com/store/apps/details?id=pk.contender.earmouse" name="Link to store page">página da loja!&lt;/a>&lt;/p>
+        &lt;p>Agradecimento especial para:&lt;br>
+        J.W. Klinkenberg (testing)&lt;br>
+        Uwe Koloska (coding, testing)&lt;br>
+        Stefan Hamacher (German localization)
+        &lt;/p>
+    </string>
+
+    <string name="mainlist_successrate" formatted="false">%1$d%% taxa de sucesso após %2$d</string>
+    <string name="list_no_modules_installed">Nenhum módulo instalado</string>
+    <string name="toast_module_installed">Módul instalado com sucesso</string>
+    <string name="toast_error_installing_module">Erro ao instalar módulo</string>
+    <string name="action_install">Instalar</string>
+    <string name="cab_selected">selecionado</string>
+    <string name="cab_deleted">excluído</string>
+    <string name="cab_installed">instalado</string>
+    <string name="cab_reset">redefinir</string>
+    <string name="list_no_modules_available">Nenhum novo módulo disponível</string>
+
+    <plurals name="plural_exercise">
+        <item quantity="one">exercício</item>
+        <item quantity="other">exercícios</item>
+    </plurals>
+
+    <plurals name="plural_module">
+        <item quantity="one">módulo</item>
+        <item quantity="other">módulos</item>
+    </plurals>
+    <string name="title_activity_settings">Configurações</string>
+
+    <!-- Strings related to Settings -->
+
+    <string name="prefs_fastplay" translatable="false">prefs_fastplay</string>
+    <string name="prefs_custom_host_toggle" translatable="false">prefs_custom_host_toggle</string>
+    <string name="prefs_custom_hostname" translatable="false">prefs_custom_host</string>
+    <string name="prefs_custom_path" translatable="false" >prefs_custom_path</string>
+    <string name="prefs_custom_port" translatable="false" >prefs_custom_port</string>
+    <string name="preferences_fastplay_title">Habilitar reprodução rápida</string>
+    <string name="preferences_fastplay_summary">Aumenta velocidade da reprodução dos exercícios</string>
+    <string name="buttongrid_practicemode">Modo praticar</string>
+    <string name="buttongrid_answermode">Modo responder</string>
+	
+	
+</resources>
