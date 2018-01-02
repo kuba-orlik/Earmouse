@@ -8,7 +8,7 @@
 	"answerList": ["Major (dur)", "Minro (mol)"],
 	"difficulty": 2,
 	"lowestNote": 12,
-	"moduleId": 10,
+	"moduleId": 100,
 	"highestNote": 41,
 	"version": "0.2"
 }
